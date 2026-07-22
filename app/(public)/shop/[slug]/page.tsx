@@ -178,10 +178,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
             {/* Actions */}
             <div className="flex gap-4 mb-12 mt-auto">
-              <button onClick={handleAddToCart} className="btn-outline flex-1 justify-center py-4 text-sm font-display tracking-widest">ADD TO CART</button>
-              <button onClick={handleBuyNow} className="btn-primary flex-1 justify-center py-4 text-sm font-display tracking-widest">BUY IT NOW</button>
-              <button onClick={() => { if(!user) openLogin(()=>toggle(product.id)); else toggle(product.id); }} className="w-14 border border-white/20 rounded-lg flex items-center justify-center hover:border-accent transition-colors">
-                <Heart size={20} className={inWishlist ? 'fill-accent text-accent' : 'text-cream'} />
+              <button onClick={handleAddToCart} className="flex-1 flex justify-center items-center py-4 text-sm font-display tracking-widest border-2 border-primary-fixed text-primary-fixed hover:bg-primary-fixed hover:text-on-primary transition-colors uppercase rounded-lg">ADD TO CART</button>
+              <button onClick={handleBuyNow} className="flex-1 flex justify-center items-center py-4 text-sm font-display tracking-widest bg-primary-fixed text-on-primary hover:opacity-80 transition-opacity uppercase rounded-lg">BUY IT NOW</button>
+              <button onClick={() => { if(!user) openLogin(()=>toggle(product.id)); else toggle(product.id); }} className="w-14 border border-on-background/20 rounded-lg flex items-center justify-center hover:border-primary-fixed transition-colors">
+                <Heart size={20} className={inWishlist ? 'fill-primary-fixed text-primary-fixed' : 'text-on-background'} />
               </button>
             </div>
 

@@ -124,7 +124,9 @@ export async function GET(req: Request) {
         formatted = formatted.filter((p: any) => mappedFits.includes(p.fitType))
       }
       if (filterGender && filterGender.length > 0) {
-        formatted = formatted.filter((p: any) => filterGender.includes(p.gender))
+        // Handle "men" vs "male" mismatch
+        const mappedGenders = filterGender.map((g: string) => g === 'men' ? 'male' : g === 'women' ? 'female' : g)
+        formatted = formatted.filter((p: any) => mappedGenders.includes(p.gender))
       }
       if (filterSize && filterSize.length > 0) {
         formatted = formatted.filter((p: any) => p.sizes.some((s: string) => filterSize.includes(s.toLowerCase())))

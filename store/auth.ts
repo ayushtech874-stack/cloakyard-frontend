@@ -5,6 +5,10 @@ export interface AuthUser {
   phone: string
   name?: string | null
   email?: string | null
+  username?: string | null
+  dob?: string | null
+  altPhone?: string | null
+  avatar?: string | null
 }
 
 interface AuthStore {

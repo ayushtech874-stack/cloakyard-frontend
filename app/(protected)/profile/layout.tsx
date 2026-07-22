@@ -12,6 +12,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     { name: 'Orders', path: '/profile/orders' },
     { name: 'Wishlist', path: '/profile/wishlist' },
     { name: 'Addresses', path: '/profile/addresses' },
+    { name: 'Settings', path: '/profile/settings' },
     { name: 'Notifications', path: '/profile/notifications' },
     { name: 'Help & Support', path: '/profile/help' },
   ]

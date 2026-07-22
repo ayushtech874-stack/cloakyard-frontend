@@ -14,7 +14,9 @@ export async function GET(req: Request) {
       // Map WooCommerce structure to our frontend structure
       let formatted = wooProducts.map((p: any) => {
         const sizes = p.attributes?.find((a:any) => a.name.toLowerCase() === 'size')?.options || ['S', 'M', 'L', 'XL', 'XXL']
-        const basePrice = parseInt(p.price || p.regular_price || '0') * 100
+        const rawPrice = p.price || p.regular_price || p.sale_price || '0';
+        const parsedPrice = parseInt(rawPrice);
+        const basePrice = (isNaN(parsedPrice) ? 0 : parsedPrice) * 100;
         const stockQty = p.stock_quantity === null || p.stock_quantity === undefined ? 10 : p.stock_quantity
         const colour = p.attributes?.find((a:any) => a.name.toLowerCase() === 'color' || a.name.toLowerCase() === 'colour')?.options[0] || 'Black'
         const isDrop = p.tags?.some((t:any) => t.name.toLowerCase() === 'drop') || false

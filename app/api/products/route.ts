@@ -57,16 +57,24 @@ export async function GET(req: Request) {
       const filterFit = searchParams.get('fitType')?.toLowerCase().split(',')
       const filterGender = searchParams.get('gender')?.toLowerCase().split(',')
       const filterSize = searchParams.get('size')?.toLowerCase().split(',')
+      const filterStatus = searchParams.get('status')?.toLowerCase().split(',')
 
       if (view === 'drops') {
         formatted = formatted.filter((p: any) => p.isDrop === true)
+        
+        // Add Status Filtering for Drops
+        if (filterStatus && filterStatus.length > 0) {
+          formatted = formatted.filter((p: any) => filterStatus.includes(p.status))
+        }
       } else if (view !== 'all') {
         // If normal shop, exclude drops
         formatted = formatted.filter((p: any) => p.isDrop === false)
       }
 
       if (filterFit && filterFit.length > 0) {
-        formatted = formatted.filter((p: any) => filterFit.includes(p.fitType))
+        // Handle "oversized" vs "oversize" mismatch
+        const mappedFits = filterFit.map((f: string) => f === 'oversized' ? 'oversize' : f)
+        formatted = formatted.filter((p: any) => mappedFits.includes(p.fitType))
       }
       if (filterGender && filterGender.length > 0) {
         formatted = formatted.filter((p: any) => filterGender.includes(p.gender))

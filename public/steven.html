@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Manager Guide - Cloakyard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        h1, h2, h3 { color: #000; }
+        h1 { border-bottom: 2px solid #000; padding-bottom: 10px; }
+        .step { background: #f9f9f9; border-left: 4px solid #000; padding: 15px 20px; margin-bottom: 20px; border-radius: 4px; }
+        code { background: #eee; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+        pre { background: #2d2d2d; color: #fff; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <h1>Cloakyard - Stock Manager Guide</h1>
+    <p>This guide explains how to properly sync WooCommerce data with the custom Next.js storefront.</p>
+
+    <h2>1. How to Set Up Pricing (Normal vs Sale Price)</h2>
+    <div class="step">
+        <h3>For Simple Products</h3>
+        <p>If a product does not have sizes or variations:</p>
+        <ul>
+            <li>Go to Product Data &gt; General in WooCommerce.</li>
+            <li>Enter your <strong>Regular Price</strong> (e.g., 1499).</li>
+            <li>Enter your <strong>Sale Price</strong> (e.g., 899).</li>
+        </ul>
+        <p>The website will automatically cross out 1499 and display 899.</p>
+    </div>
+
+    <div class="step">
+        <h3>For Variable Products (Products with Sizes like S, M, L)</h3>
+        <p>Variable products require prices to be set on the variations themselves.</p>
+        <ul>
+            <li>Go to Product Data &gt; Variations.</li>
+            <li>Expand a variation (e.g., Size M).</li>
+            <li>You MUST enter <strong>both</strong> the Regular Price AND the Sale Price directly inside the variation settings.</li>
+            <li>If you only enter the Regular Price (e.g. 899) and leave Sale Price blank, the website will think 899 is the normal price and will not cross anything out.</li>
+            <li><strong>Pro Tip:</strong> You can bulk edit all variations at once by clicking the dropdown in the Variations tab and selecting "Set regular prices", then "Set sale prices".</li>
+        </ul>
+    </div>
+
+    <h2>2. How to Manage Filters (Like adding "Color")</h2>
+    <p>Because Cloakyard uses a highly customized React storefront, the sidebar filters (Fit, Size, Gender) are hardcoded to match the exact design aesthetic. If you want to add a completely new filter (like "Color"), it requires a minor code update.</p>
+    
+    <div class="step">
+        <h3>Step A: Setup in WooCommerce</h3>
+        <ul>
+            <li>Go to Products &gt; Attributes in WooCommerce.</li>
+            <li>Add a new Attribute called <code>Color</code>.</li>
+            <li>Go to a product and assign the Color attribute (e.g., Black, White).</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h3>Step B: Update Frontend Code</h3>
+        <p>To make the filter show up on the website's sidebar, edit <code>app/(public)/shop/page.tsx</code>:</p>
+        <pre><code>&lt;div className="space-y-4"&gt;
+  &lt;h3 className="font-headline-lg text-xl text-on-background uppercase tracking-wider"&gt;COLOR&lt;/h3&gt;
+  &lt;div className="flex flex-col gap-2"&gt;
+    {['black', 'white', 'grey'].map(c =&gt; (
+      &lt;label key={c} className="flex items-center gap-3 cursor-pointer group"&gt;
+        &lt;input type="checkbox" onChange={() =&gt; toggleArrayFilter('color', c, colors)} /&gt;
+        {c}
+      &lt;/label&gt;
+    ))}
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+
+    <div class="step">
+        <h3>Step C: Update Backend API</h3>
+        <p>To make the API actually filter the products, edit <code>app/api/products/route.ts</code>:</p>
+        <pre><code>const filterColor = searchParams.get('color')?.toLowerCase().split(',')
+if (filterColor && filterColor.length > 0) {
+  formatted = formatted.filter((p: any) => filterColor.includes(p.colour.toLowerCase()))
+}</code></pre>
+    </div>
+
+</body>
+</html>

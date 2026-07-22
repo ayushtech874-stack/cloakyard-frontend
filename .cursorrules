@@ -1,0 +1,11 @@
+# Documentation Requirements for Cloakyard
+
+1. **Next.js Code Fixes (`guidetomake.md`)**:
+   - ANY time a Next.js bug is fixed, a new feature is added, or a file is changed, you MUST automatically append a new entry to the Developer Log in `C:\Users\amish\.gemini\antigravity\brain\cbb1aaa9-18b3-418c-8995-b118e52c5374\guidetomake.md`.
+   - The entry MUST include: The exact file changed, what problem it was causing, how the error was spotted (terminal commands/logic), and exactly how the code was fixed.
+   - Do this proactively. Do not wait for the user to ask.
+
+2. **WooCommerce Steps (`STEVEN.html`)**:
+   - ANY time a new WooCommerce mechanic is introduced (e.g., handling variable prices, attributes, stock, tags), you MUST automatically update `C:\Users\amish\.gemini\antigravity\brain\cbb1aaa9-18b3-418c-8995-b118e52c5374\STEVEN.html`.
+   - Ensure it is written as a step-by-step master guide for the user to follow in their Hostinger dashboard.
+   - Do this proactively. Do not wait for the user to ask.

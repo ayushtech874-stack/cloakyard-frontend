@@ -6,9 +6,11 @@ import { useAuthStore } from '@/store/auth'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 
+import { Suspense } from 'react'
+
 const Spline = dynamic(() => import('@splinetool/react-spline'), { ssr: false })
 
-export default function LoginPage() {
+function LoginContent() {
   const { user, setUser } = useAuthStore()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -136,5 +138,13 @@ export default function LoginPage() {
         </AnimatePresence>
       </motion.div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-bg flex items-center justify-center"><div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div></div>}>
+      <LoginContent />
+    </Suspense>
   )
 }

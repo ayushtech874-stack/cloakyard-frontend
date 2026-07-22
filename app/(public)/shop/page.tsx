@@ -4,7 +4,9 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { ProductCard } from '@/components/product/ProductCard'
 import { Footer } from '@/components/layout/Footer'
 
-export default function ShopPage() {
+import { Suspense } from 'react'
+
+function ShopContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [products, setProducts] = useState<any[]>([])
@@ -180,5 +182,13 @@ export default function ShopPage() {
         </div>
       </div>
     </>
+  )
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary-fixed border-t-transparent rounded-full animate-spin"></div></div>}>
+      <ShopContent />
+    </Suspense>
   )
 }

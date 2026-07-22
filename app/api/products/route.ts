@@ -11,8 +11,23 @@ export async function GET(req: Request) {
     const wooProducts = await fetchWooCommerce('products?status=publish&per_page=20')
     
     if (wooProducts && Array.isArray(wooProducts) && wooProducts.length > 0) {
+      // Fetch variations for all variable products in parallel
+      const variationPromises = wooProducts.map(async (p: any) => {
+        if (p.type === 'variable') {
+          try {
+            return await fetchWooCommerce(`products/${p.id}/variations`)
+          } catch (e) {
+            console.error(`Failed to fetch variations for ${p.id}`, e)
+            return []
+          }
+        }
+        return []
+      })
+      
+      const allVariations = await Promise.all(variationPromises)
+
       // Map WooCommerce structure to our frontend structure
-      let formatted = wooProducts.map((p: any) => {
+      let formatted = wooProducts.map((p: any, index: number) => {
         const sizes = p.attributes?.find((a:any) => a.name.toLowerCase() === 'size')?.options || ['S', 'M', 'L', 'XL', 'XXL']
         const rawPrice = p.price || p.regular_price || p.sale_price || '0';
         const parsedPrice = parseInt(rawPrice);
@@ -35,6 +50,8 @@ export async function GET(req: Request) {
         const colour = p.attributes?.find((a:any) => a.name.toLowerCase() === 'color' || a.name.toLowerCase() === 'colour')?.options[0] || 'Black'
         const isDrop = p.tags?.some((t:any) => t.name.toLowerCase() === 'drop') || false
         
+        const productVariations = allVariations[index]
+        
         return {
           id: p.id.toString(),
           slug: p.slug,
@@ -47,9 +64,38 @@ export async function GET(req: Request) {
           sizes: sizes,
           price_html: p.price_html,
           images: p.images?.length > 0 ? p.images.map((img:any) => ({ url: img.src })) : [{ url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800' }],
-          variants: sizes.map((size: string, idx: number) => ({ 
-            id: `v${p.id}-${idx}`, price: basePrice, regularPrice: regularPrice, salePrice: salePrice, colour: colour, size: size, stock: stockQty 
-          }))
+          variants: sizes.map((size: string, idx: number) => {
+            let varPrice = basePrice
+            let varReg = regularPrice
+            let varSale = salePrice
+            
+            if (productVariations && Array.isArray(productVariations)) {
+              const matchedVar = productVariations.find((v:any) => 
+                v.attributes?.some((a:any) => a.name.toLowerCase() === 'size' && a.option.toUpperCase() === size.toUpperCase())
+              )
+              
+              if (matchedVar) {
+                const matchedParsedPrice = parseInt(matchedVar.price || '0')
+                varPrice = (isNaN(matchedParsedPrice) ? 0 : matchedParsedPrice) * 100
+                
+                const matchedReg = parseInt(matchedVar.regular_price || '0')
+                varReg = (isNaN(matchedReg) ? 0 : matchedReg) * 100
+                
+                const matchedSale = parseInt(matchedVar.sale_price || '0')
+                varSale = (isNaN(matchedSale) ? 0 : matchedSale) * 100
+              }
+            }
+            
+            return {
+              id: `v${p.id}-${idx}`, 
+              price: varPrice, 
+              regularPrice: varReg, 
+              salePrice: varSale, 
+              colour: colour, 
+              size: size, 
+              stock: stockQty 
+            }
+          })
         }
       })
       

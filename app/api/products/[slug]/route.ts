@@ -33,6 +33,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       const colour = p.attributes?.find((a:any) => a.name.toLowerCase() === 'color' || a.name.toLowerCase() === 'colour')?.options[0] || 'Black'
       const isDrop = p.tags?.some((t:any) => t.name.toLowerCase() === 'drop') || false
       
+      let variationsData: any = null
+      if (p.type === 'variable') {
+        try {
+          variationsData = await fetchWooCommerce(`products/${p.id}/variations`)
+        } catch (e) {
+          console.error("Failed to fetch variations", e)
+        }
+      }
+      
       const formatted = {
         id: p.id.toString(),
         slug: p.slug,
@@ -47,10 +56,40 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         isDrop: isDrop,
         sizes: sizes,
         images: p.images?.length > 0 ? p.images.map((img:any) => ({ url: img.src })) : [{ url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800' }],
-        variants: sizes.map((size: string, idx: number) => ({ 
-          id: `v${p.id}-${idx}`, price: basePrice, regularPrice: regularPrice, salePrice: salePrice, colour: colour, size: size, stock: stockQty 
-        })),
-        reviews: [] // Fallback, could fetch from WooCommerce later
+        variants: sizes.map((size: string, idx: number) => {
+          let varPrice = basePrice
+          let varReg = regularPrice
+          let varSale = salePrice
+          
+          if (variationsData && Array.isArray(variationsData)) {
+            // Find matching variation by size attribute
+            const matchedVar = variationsData.find(v => 
+              v.attributes?.some((a:any) => a.name.toLowerCase() === 'size' && a.option.toUpperCase() === size.toUpperCase())
+            )
+            
+            if (matchedVar) {
+              const matchedParsedPrice = parseInt(matchedVar.price || '0')
+              varPrice = (isNaN(matchedParsedPrice) ? 0 : matchedParsedPrice) * 100
+              
+              const matchedReg = parseInt(matchedVar.regular_price || '0')
+              varReg = (isNaN(matchedReg) ? 0 : matchedReg) * 100
+              
+              const matchedSale = parseInt(matchedVar.sale_price || '0')
+              varSale = (isNaN(matchedSale) ? 0 : matchedSale) * 100
+            }
+          }
+          
+          return {
+            id: `v${p.id}-${idx}`, 
+            price: varPrice, 
+            regularPrice: varReg, 
+            salePrice: varSale, 
+            colour: colour, 
+            size: size, 
+            stock: stockQty 
+          }
+        }),
+        reviews: [] // Fallback
       }
       
       return NextResponse.json(formatted)

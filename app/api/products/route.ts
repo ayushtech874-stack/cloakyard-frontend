@@ -1,13 +1,6 @@
 import { NextResponse } from 'next/server'
 import { fetchWooCommerce } from '@/lib/woocommerce'
 
-const DUMMY_PRODUCTS = [
-  { id: '1', slug: 'void-oversized-tee', name: 'Void Oversized Tee', fitType: 'oversized', gender: 'unisex', isNew: true, status: 'new', sizes: ['S', 'M', 'L', 'XL'], images: [{ url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800' }, { url: 'https://images.unsplash.com/photo-1503341733017-1901578f9f1e?w=800' }], variants: [{ id: 'v1', price: 89900, colour: 'Black', size: 'M', stock: 10 }] },
-  { id: '2', slug: 'phantom-boxy-tee', name: 'Phantom Boxy Tee', fitType: 'boxy', gender: 'men', isNew: true, status: 'upcoming', sizes: ['M', 'L', 'XL', 'XXL'], images: [{ url: 'https://images.unsplash.com/photo-1503341733017-1901578f9f1e?w=800' }], variants: [{ id: 'v2', price: 89900, colour: 'White', size: 'M', stock: 10 }] },
-  { id: '3', slug: 'grime-graphic-tee', name: 'Grime Graphic Tee', fitType: 'streetwear', gender: 'unisex', isNew: true, status: 'new', sizes: ['S', 'M', 'L'], images: [{ url: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800' }], variants: [{ id: 'v3', price: 99900, colour: 'Black', size: 'L', stock: 5 }] },
-  { id: '4', slug: 'clean-slate-tee', name: 'Clean Slate Tee', fitType: 'normal', gender: 'unisex', isNew: false, status: 'none', sizes: ['S', 'M', 'L', 'XL', 'XXL'], images: [{ url: 'https://images.unsplash.com/photo-1527719327859-c6ce80353573?w=800' }], variants: [{ id: 'v4', price: 79900, colour: 'Olive', size: 'M', stock: 20 }] },
-]
-
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
@@ -33,11 +26,11 @@ export async function GET(req: Request) {
       return NextResponse.json(formatted)
     }
 
-    // Fallback to dummy data if WooCommerce is empty or failing
-    console.log("WooCommerce returned empty, falling back to DUMMY_PRODUCTS")
-    return NextResponse.json(DUMMY_PRODUCTS)
+    // Fallback to empty array if WooCommerce is empty or failing
+    console.log("WooCommerce returned empty")
+    return NextResponse.json([])
   } catch (error) {
     console.error("Failed to fetch from WooCommerce:", error)
-    return NextResponse.json(DUMMY_PRODUCTS)
+    return NextResponse.json([])
   }
 }

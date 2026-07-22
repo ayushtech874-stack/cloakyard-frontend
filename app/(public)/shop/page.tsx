@@ -169,7 +169,7 @@ function ShopContent() {
 
           {/* Main Grid */}
           <div className="flex-1 mt-8 md:mt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
               {loading ? (
                 [...Array(8)].map((_, i) => <div key={i} className="aspect-[3/4] bg-surface border border-on-background/5 rounded-xl skeleton" />)
               ) : products.length > 0 ? (

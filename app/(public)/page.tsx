@@ -50,7 +50,7 @@ export default function Home() {
         </div>
         
         {/* Product Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-md lg:gap-lg">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
           {/* Card 1 */}
           <Link href="/shop/onyx-oversize-tee" className="group relative flex flex-col bg-surface border border-on-background/10 hover:border-primary-fixed transition-all duration-500 overflow-hidden rounded-xl">
             <div className="aspect-[3/4] overflow-hidden relative bg-black">

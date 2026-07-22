@@ -80,7 +80,7 @@ export function LoginModal() {
               <X size={18} />
             </button>
 
-            <div className="mb-4">
+            <div className="mb-4 flex justify-center w-full">
               <Image src="/logo.jpeg" alt="Cloakyard" width={140} height={35} className="object-contain" />
             </div>
 

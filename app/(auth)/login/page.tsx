@@ -112,7 +112,7 @@ function LoginContent() {
                     type="text" maxLength={1} value={digit}
                     onChange={e => handleOTPInput(e.target.value, i)}
                     onKeyDown={e => e.key === 'Backspace' && !digit && i > 0 && document.getElementById(`otp-page-${i-1}`)?.focus()}
-                    className="flex-1 h-14 text-center font-mono text-xl text-cream rounded-xl outline-none focus:border-accent transition-colors bg-surface border border-white/10"
+                    className="flex-1 min-w-0 w-0 h-14 text-center font-mono text-xl text-cream rounded-xl outline-none focus:border-accent transition-colors bg-surface border border-white/10"
                     autoFocus={i === 0}
                   />
                 ))}

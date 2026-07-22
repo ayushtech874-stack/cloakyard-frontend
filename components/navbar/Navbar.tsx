@@ -1,4 +1,5 @@
 'use client'
+import { Menu, X, Sun, Moon, Heart, User, ShoppingBag } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useCartStore } from '@/store/cart'
@@ -38,7 +39,7 @@ export function Navbar() {
           
           <div className="flex items-center gap-4">
             <button className="md:hidden" onClick={() => setMobileMenuOpen(true)}>
-              <span className="material-symbols-outlined text-on-surface-variant">menu</span>
+              <Menu className="w-6 h-6 text-on-surface-variant" />
             </button>
             <Link href="/" className="hidden md:block">
               <Image 
@@ -79,14 +80,12 @@ export function Navbar() {
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 className="group hover:opacity-80 transition-opacity hidden md:block"
               >
-                <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed">
-                  {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-                </span>
+                {theme === 'dark' ? <Sun className="w-5 h-5 text-on-surface-variant group-hover:text-primary-fixed" /> : <Moon className="w-5 h-5 text-on-surface-variant group-hover:text-primary-fixed" />}
               </button>
             )}
 
             <Link href="/profile/wishlist" className="relative group hidden md:block hover:opacity-80 transition-opacity">
-              <span className="material-symbols-outlined text-on-surface-variant">favorite</span>
+              <Heart className="w-5 h-5 text-on-surface-variant group-hover:text-primary-fixed" />
               {mounted && wishlistCount > 0 && (
                 <span className="absolute -top-1.5 -right-2 bg-primary-fixed text-on-primary-fixed text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {wishlistCount}
@@ -97,15 +96,15 @@ export function Navbar() {
             <button onClick={user ? undefined : () => openLogin()} className="group hover:opacity-80 transition-opacity">
               {user ? (
                 <Link href="/profile">
-                  <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed">person</span>
+                  <User className="w-5 h-5 text-on-surface-variant group-hover:text-primary-fixed" />
                 </Link>
               ) : (
-                <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed">person</span>
+                <User className="w-5 h-5 text-on-surface-variant group-hover:text-primary-fixed" />
               )}
             </button>
 
             <button onClick={openCart} className="relative group hover:opacity-80 transition-opacity">
-              <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed">shopping_bag</span>
+              <ShoppingBag className="w-5 h-5 text-on-surface-variant group-hover:text-primary-fixed" />
               {mounted && cartCount > 0 && (
                 <span className="absolute -top-1.5 -right-2 bg-primary-fixed text-on-primary-fixed text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {cartCount}
@@ -130,7 +129,7 @@ export function Navbar() {
               />
             </Link>
             <button onClick={() => setMobileMenuOpen(false)}>
-              <span className="material-symbols-outlined text-on-background">close</span>
+              <X className="w-6 h-6 text-on-background" />
             </button>
           </div>
           <SearchBar />
@@ -147,9 +146,7 @@ export function Navbar() {
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="mt-auto flex items-center gap-2 text-on-surface-variant hover:text-primary-fixed uppercase font-label-sm text-label-sm tracking-widest"
             >
-              <span className="material-symbols-outlined">
-                {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-              </span>
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               Switch Theme
             </button>
           )}

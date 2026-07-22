@@ -57,7 +57,7 @@ export function Navbar() {
           <div className="hidden md:flex flex-1 max-w-md mx-8 justify-center">
             <div className="flex items-center gap-lg">
               <Link href="/" className={`${pathname === '/' ? 'text-primary-fixed border-b-2 border-primary-fixed pb-1' : 'text-on-surface-variant hover:text-primary-fixed transition-colors'} font-label-sm text-label-sm uppercase tracking-widest`}>Home</Link>
-              <Link href="/shop" className={`${pathname === '/shop' && currentView !== 'drops' ? 'text-primary-fixed border-b-2 border-primary-fixed pb-1' : 'text-on-surface-variant hover:text-primary-fixed transition-colors'} font-label-sm text-label-sm uppercase tracking-widest`}>Shop</Link>
+              <Link href="/shop?view=shop" className={`${pathname === '/shop' && currentView !== 'drops' ? 'text-primary-fixed border-b-2 border-primary-fixed pb-1' : 'text-on-surface-variant hover:text-primary-fixed transition-colors'} font-label-sm text-label-sm uppercase tracking-widest`}>Shop</Link>
               <Link href="/shop?view=drops" className={`${pathname === '/shop' && currentView === 'drops' ? 'text-primary-fixed border-b-2 border-primary-fixed pb-1' : 'text-on-surface-variant hover:text-primary-fixed transition-colors'} font-label-sm text-label-sm uppercase tracking-widest`}>Drops</Link>
               <Link href="/customise" className={`${pathname === '/customise' ? 'text-primary-fixed border-b-2 border-primary-fixed pb-1' : 'text-on-surface-variant hover:text-primary-fixed transition-colors'} font-label-sm text-label-sm uppercase tracking-widest`}>Vault</Link>
               <Link href="/about" className={`${pathname === '/about' ? 'text-primary-fixed border-b-2 border-primary-fixed pb-1' : 'text-on-surface-variant hover:text-primary-fixed transition-colors'} font-label-sm text-label-sm uppercase tracking-widest`}>About</Link>
@@ -137,7 +137,7 @@ export function Navbar() {
           <SearchBar />
           <nav className="mt-8 flex flex-col gap-6 text-xl font-headline-lg text-on-background uppercase">
             <Link href="/" onClick={() => setMobileMenuOpen(false)} className={pathname === '/' ? 'text-primary-fixed' : ''}>Home</Link>
-            <Link href="/shop" onClick={() => setMobileMenuOpen(false)} className={pathname === '/shop' && currentView !== 'drops' ? 'text-primary-fixed' : ''}>Shop All</Link>
+            <Link href="/shop?view=shop" onClick={() => setMobileMenuOpen(false)} className={pathname === '/shop' && currentView !== 'drops' ? 'text-primary-fixed' : ''}>Shop All</Link>
             <Link href="/shop?view=drops" onClick={() => setMobileMenuOpen(false)} className={pathname === '/shop' && currentView === 'drops' ? 'text-primary-fixed' : ''}>Drops</Link>
             <Link href="/customise" onClick={() => setMobileMenuOpen(false)} className={pathname === '/customise' ? 'text-primary-fixed' : ''}>Customise</Link>
             <Link href="/profile" onClick={() => { setMobileMenuOpen(false); if(!user) openLogin(); }} className={pathname === '/profile' ? 'text-primary-fixed' : ''}>Profile</Link>

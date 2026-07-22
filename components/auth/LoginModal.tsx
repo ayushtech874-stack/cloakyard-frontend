@@ -116,7 +116,7 @@ export function LoginModal() {
                         type="text" maxLength={1} value={digit}
                         onChange={e => handleOTPInput(e.target.value, i)}
                         onKeyDown={e => e.key === 'Backspace' && !digit && i > 0 && document.getElementById(`otp-${i-1}`)?.focus()}
-                        className="flex-1 h-10 text-center font-mono text-base text-cream rounded-lg outline-none focus:border-accent transition-colors"
+                        className="flex-1 min-w-0 w-0 h-10 text-center font-mono text-base text-cream rounded-lg outline-none focus:border-accent transition-colors"
                         style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }}
                       />
                     ))}

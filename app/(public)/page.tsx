@@ -2,8 +2,22 @@
 
 import Link from 'next/link'
 import { ThreeCanvas } from '@/components/canvas/ThreeCanvas'
+import { ProductCard } from '@/components/product/ProductCard'
+import { useState, useEffect } from 'react'
 
 export default function Home() {
+  const [featured, setFeatured] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => {
+        setFeatured(data.slice(0, 4))
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [])
   return (
     <div className="w-full bg-background min-h-screen custom-scrollbar transition-colors duration-300">
       {/* Hero Section */}
@@ -50,53 +64,14 @@ export default function Home() {
         </div>
         
         {/* Product Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
-          {/* Card 1 */}
-          <Link href="/shop/onyx-oversize-tee" className="group relative flex flex-col bg-surface border border-on-background/10 hover:border-primary-fixed transition-all duration-500 overflow-hidden rounded-xl">
-            <div className="aspect-[3/4] overflow-hidden relative bg-black">
-              <img alt="Onyx Oversize Tee" className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 scale-100 group-hover:scale-105" src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1000&auto=format&fit=crop"/>
-              <div className="absolute top-sm right-sm bg-primary-fixed text-on-primary px-base py-xs font-label-sm text-[10px] tracking-tighter uppercase rounded">Fast Selling</div>
-            </div>
-            <div className="p-md flex flex-col gap-xs glass border-t border-on-background/10">
-              <div className="flex justify-between items-start">
-                <h3 className="font-headline-lg text-[24px] uppercase leading-none text-primary-fixed">Onyx Oversize Tee</h3>
-                <span className="font-label-sm text-primary-fixed text-[20px]">₹1499</span>
-              </div>
-              <p className="font-body-md text-on-surface-variant text-sm">450GSM French Terry / Boxy Fit</p>
-              <button className="mt-md w-full border border-primary-fixed/20 py-sm font-label-sm text-label-sm uppercase tracking-widest text-primary-fixed hover:bg-primary-fixed hover:text-on-primary transition-all rounded">View Details</button>
-            </div>
-          </Link>
-          
-          {/* Card 2 */}
-          <Link href="/shop/core-logo-drop" className="group relative flex flex-col bg-surface border border-on-background/10 hover:border-primary-fixed transition-all duration-500 overflow-hidden rounded-xl">
-            <div className="aspect-[3/4] overflow-hidden relative bg-black">
-              <img alt="Core Logo Drop" className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 scale-100 group-hover:scale-105" src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1000&auto=format&fit=crop"/>
-              <div className="absolute top-sm right-sm bg-surface border border-primary-fixed text-primary-fixed px-base py-xs font-label-sm text-[10px] tracking-tighter uppercase rounded">Core</div>
-            </div>
-            <div className="p-md flex flex-col gap-xs glass border-t border-on-background/10">
-              <div className="flex justify-between items-start">
-                <h3 className="font-headline-lg text-[24px] uppercase leading-none text-primary-fixed">Core Logo Tee</h3>
-                <span className="font-label-sm text-primary-fixed text-[20px]">₹1299</span>
-              </div>
-              <p className="font-body-md text-on-surface-variant text-sm">Premium Cotton / Heavyweight</p>
-              <button className="mt-md w-full border border-primary-fixed/20 py-sm font-label-sm text-label-sm uppercase tracking-widest text-primary-fixed hover:bg-primary-fixed hover:text-on-primary transition-all rounded">View Details</button>
-            </div>
-          </Link>
-          
-          {/* Card 3 */}
-          <Link href="/shop/monochrome-shirt" className="group relative flex flex-col bg-surface border border-on-background/10 hover:border-primary-fixed transition-all duration-500 overflow-hidden rounded-xl">
-            <div className="aspect-[3/4] overflow-hidden relative bg-black">
-              <img alt="Monochrome Shirt" className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 scale-100 group-hover:scale-105" src="https://images.unsplash.com/photo-1503342394128-c104d54dba01?q=80&w=1000&auto=format&fit=crop"/>
-            </div>
-            <div className="p-md flex flex-col gap-xs glass border-t border-on-background/10">
-              <div className="flex justify-between items-start">
-                <h3 className="font-headline-lg text-[24px] uppercase leading-none text-primary-fixed">Void Overshirt</h3>
-                <span className="font-label-sm text-primary-fixed text-[20px]">₹2599</span>
-              </div>
-              <p className="font-body-md text-on-surface-variant text-sm">Brushed Twill / Relaxed Cut</p>
-              <button className="mt-md w-full border border-primary-fixed/20 py-sm font-label-sm text-label-sm uppercase tracking-widest text-primary-fixed hover:bg-primary-fixed hover:text-on-primary transition-all rounded">View Details</button>
-            </div>
-          </Link>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+          {loading ? (
+            [...Array(4)].map((_, i) => <div key={i} className="aspect-[3/4] bg-surface border border-on-background/5 rounded-xl skeleton" />)
+          ) : featured.length > 0 ? (
+            featured.map(p => <ProductCard key={p.id} product={p} />)
+          ) : (
+            <div className="col-span-full py-12 text-center text-on-surface-variant font-label-sm uppercase tracking-widest border border-dashed border-on-background/10 rounded-xl">No products added yet.</div>
+          )}
         </div>
       </section>
 

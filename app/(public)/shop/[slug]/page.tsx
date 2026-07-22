@@ -18,6 +18,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [activeImage, setActiveImage] = useState(0)
   const [selectedColor, setSelectedColor] = useState('')
   const [selectedSize, setSelectedSize] = useState('')
+  const [isZooming, setIsZooming] = useState(false)
+  const [zoomStyle, setZoomStyle] = useState({})
   
   const { addItem, openCart } = useCartStore()
   const { toggle, isInWishlist } = useWishlistStore()
@@ -74,6 +76,16 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     router.push('/checkout')
   }
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - left) / width) * 100
+    const y = ((e.clientY - top) / height) * 100
+    setZoomStyle({
+      transformOrigin: `${x}% ${y}%`,
+      transform: 'scale(2.5)' // Magnification level
+    })
+  }
+
   return (
     <>
       <div className="bg-bg min-h-screen pb-24">
@@ -87,8 +99,20 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Images */}
           <div className="space-y-4">
-            <div className="relative aspect-[4/5] bg-surface2 rounded-xl overflow-hidden border border-white/[0.06]">
-              <Image src={product.images[activeImage]?.url || '/placeholder.jpg'} alt={product.name} fill className="object-cover" priority />
+            <div 
+              className="relative aspect-[4/5] bg-surface2 rounded-xl overflow-hidden border border-white/[0.06] cursor-crosshair"
+              onMouseEnter={() => setIsZooming(true)}
+              onMouseLeave={() => { setIsZooming(false); setZoomStyle({ transformOrigin: 'center', transform: 'scale(1)' }) }}
+              onMouseMove={handleMouseMove}
+            >
+              <Image 
+                src={product.images[activeImage]?.url || '/placeholder.jpg'} 
+                alt={product.name} 
+                fill 
+                className="object-cover transition-transform duration-75"
+                style={isZooming ? zoomStyle : { transformOrigin: 'center', transform: 'scale(1)' }}
+                priority 
+              />
             </div>
             <div className="flex gap-4 overflow-x-auto no-scrollbar">
               {product.images.map((img: any, i: number) => (

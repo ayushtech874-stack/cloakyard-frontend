@@ -44,7 +44,7 @@ export async function GET(req: Request) {
 
       if (view === 'drops') {
         formatted = formatted.filter((p: any) => p.isDrop === true)
-      } else {
+      } else if (view !== 'all') {
         // If normal shop, exclude drops
         formatted = formatted.filter((p: any) => p.isDrop === false)
       }

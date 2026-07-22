@@ -10,7 +10,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/products')
+    fetch('/api/products?view=all')
       .then(res => res.json())
       .then(data => {
         setFeatured(data.slice(0, 4))

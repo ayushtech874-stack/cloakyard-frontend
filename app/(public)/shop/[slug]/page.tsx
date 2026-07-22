@@ -131,7 +131,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             <h1 className="font-display text-[clamp(40px,5vw,64px)] text-cream leading-[0.9] mb-4">{product.name}</h1>
             
             <div className="flex items-center gap-4 mb-8">
-              <p className="font-mono text-2xl text-accent">{formatPrice(selectedVariant?.price || 0)}</p>
+              <div className="flex items-center gap-3">
+                <p className="font-mono text-2xl text-accent">{formatPrice(selectedVariant?.price || 0)}</p>
+                {selectedVariant?.regularPrice > selectedVariant?.price && (
+                  <p className="font-mono text-lg text-muted line-through">{formatPrice(selectedVariant.regularPrice)}</p>
+                )}
+              </div>
               {product.reviews.length > 0 && (
                 <div className="flex items-center gap-1 text-sm text-muted">
                   <Star size={16} className="fill-accent text-accent" />

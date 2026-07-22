@@ -16,6 +16,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       const rawPrice = p.price || p.regular_price || p.sale_price || '0'
       const parsedPrice = parseInt(rawPrice)
       const basePrice = (isNaN(parsedPrice) ? 0 : parsedPrice) * 100
+      
+      const parsedRegular = parseInt(p.regular_price || '0')
+      const parsedSale = parseInt(p.sale_price || '0')
+      const regularPrice = (isNaN(parsedRegular) ? 0 : parsedRegular) * 100
+      const salePrice = (isNaN(parsedSale) ? 0 : parsedSale) * 100
       const stockQty = p.stock_quantity === null || p.stock_quantity === undefined ? 10 : p.stock_quantity
       const colour = p.attributes?.find((a:any) => a.name.toLowerCase() === 'color' || a.name.toLowerCase() === 'colour')?.options[0] || 'Black'
       const isDrop = p.tags?.some((t:any) => t.name.toLowerCase() === 'drop') || false
@@ -35,7 +40,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         sizes: sizes,
         images: p.images?.length > 0 ? p.images.map((img:any) => ({ url: img.src })) : [{ url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800' }],
         variants: sizes.map((size: string, idx: number) => ({ 
-          id: `v${p.id}-${idx}`, price: basePrice, colour: colour, size: size, stock: stockQty 
+          id: `v${p.id}-${idx}`, price: basePrice, regularPrice: regularPrice, salePrice: salePrice, colour: colour, size: size, stock: stockQty 
         })),
         reviews: [] // Fallback, could fetch from WooCommerce later
       }

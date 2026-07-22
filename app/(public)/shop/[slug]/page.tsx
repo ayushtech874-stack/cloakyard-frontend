@@ -27,6 +27,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const router = useRouter()
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     fetch(`/api/products/${slug}`)
       .then(res => res.json())
       .then(data => {

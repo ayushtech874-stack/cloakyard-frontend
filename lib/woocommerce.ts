@@ -20,6 +20,7 @@ export async function fetchWooCommerce(endpoint: string, options: RequestInit = 
 
   const response = await fetch(`${WOOCOMMERCE_URL}/wp-json/wc/v3/${endpoint}`, {
     ...options,
+    cache: 'no-store',
     headers: {
       ...defaultHeaders,
       ...options.headers,

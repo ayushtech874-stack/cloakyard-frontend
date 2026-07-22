@@ -20,7 +20,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
       let parsedRegular = parseInt(p.regular_price || '0')
       if (isNaN(parsedRegular) || parsedRegular === 0) {
         if (p.price_html && p.price_html.includes('<del')) {
-          const match = p.price_html.match(/<del[^>]*>.*?([\d,]+(\.\d+)?).*?<\/del>/)
+          const match = p.price_html.match(/<del[^>]*>[\s\S]*?([\d,]+(\.\d+)?)[\s\S]*?<\/del>/)
           if (match && match[1]) {
             parsedRegular = parseInt(match[1].replace(/,/g, ''))
           }

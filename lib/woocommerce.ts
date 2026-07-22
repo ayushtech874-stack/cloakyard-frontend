@@ -2,7 +2,10 @@
  * WooCommerce REST API Client configuration
  */
 
-const WOOCOMMERCE_URL = process.env.WOOCOMMERCE_STORE_URL || 'https://your-hostinger-site.com';
+let WOOCOMMERCE_URL = process.env.WOOCOMMERCE_STORE_URL || 'https://your-hostinger-site.com';
+if (WOOCOMMERCE_URL.startsWith('http://')) {
+  WOOCOMMERCE_URL = WOOCOMMERCE_URL.replace('http://', 'https://');
+}
 const CONSUMER_KEY = process.env.WOOCOMMERCE_CONSUMER_KEY || '';
 const CONSUMER_SECRET = process.env.WOOCOMMERCE_CONSUMER_SECRET || '';
 

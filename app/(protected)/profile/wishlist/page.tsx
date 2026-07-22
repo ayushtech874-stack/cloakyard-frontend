@@ -1,87 +1,63 @@
 'use client'
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { useAuthStore } from '@/store/auth'
-import { useCartStore } from '@/store/cart'
 import { useWishlistStore } from '@/store/wishlist'
-import { formatPrice } from '@/lib/utils'
-import { HeartCrack } from 'lucide-react'
+import { ProductCard } from '@/components/product/ProductCard'
+import Link from 'next/link'
+import { Heart } from 'lucide-react'
 
 export default function WishlistPage() {
-  const { user } = useAuthStore()
-  const { addItem, openCart } = useCartStore()
-  const { removeItem } = useWishlistStore()
-  const [items, setItems] = useState<any[]>([])
+  const { items } = useWishlistStore()
+  const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
-  const fetchWishlist = () => {
-    fetch(`/api/wishlist?userId=${user?.id}`)
+  useEffect(() => {
+    if (items.length === 0) {
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
+    fetch(`/api/products?view=all`)
       .then(res => res.json())
       .then(data => {
-        setItems(data)
+        // Filter only products that are in the user's wishlist
+        const wishlistProducts = data.filter((p: any) => items.includes(p.id))
+        setProducts(wishlistProducts)
         setLoading(false)
       })
-  }
-
-  useEffect(() => {
-    if (user) fetchWishlist()
-  }, [user])
-
-  const handleRemove = async (productId: string) => {
-    removeItem(productId) // Optimistic local store update
-    setItems(items.filter(i => i.productId !== productId))
-    await fetch('/api/wishlist', {
-      method: 'POST',
-      body: JSON.stringify({ userId: user?.id, productId })
-    })
-  }
-
-  const handleAddToCart = (item: any) => {
-    const defaultVariant = item.product.variants[0]
-    if(!defaultVariant) return
-    addItem({
-      variantId: defaultVariant.id,
-      productId: item.product.id,
-      name: item.product.name,
-      image: item.product.images[0]?.url,
-      size: defaultVariant.size,
-      colour: defaultVariant.colour,
-      price: defaultVariant.price
-    })
-    handleRemove(item.product.id)
-  }
-
-  if (loading) return <div className="grid grid-cols-2 gap-4">{[...Array(4)].map((_,i)=><div key={i} className="aspect-[4/5] rounded-xl skeleton" />)}</div>
-
-  if (items.length === 0) return (
-    <div className="text-center py-20 bg-surface rounded-2xl border border-white/10 flex flex-col items-center">
-      <HeartCrack size={40} className="text-white/10 mb-4" />
-      <p className="text-cream text-lg font-display mb-2">Wishlist is empty</p>
-      <p className="text-muted text-sm mb-6">You haven't saved any items yet.</p>
-      <Link href="/shop" className="btn-primary">EXPLORE</Link>
-    </div>
-  )
+  }, [items])
 
   return (
-    <div className="space-y-6">
-      <h2 className="font-display text-2xl text-cream mb-6">SAVED ITEMS</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-        {items.map(({ product }) => (
-          <div key={product.id} className="bg-surface rounded-xl border border-white/10 overflow-hidden flex flex-col">
-            <Link href={`/shop/${product.slug}`} className="relative aspect-[4/5] block bg-bg">
-              <img src={product.images[0]?.url || '/placeholder.jpg'} alt="" className="w-full h-full object-cover" />
-            </Link>
-            <div className="p-4 flex flex-col flex-1">
-              <p className="text-sm font-medium text-cream truncate mb-1">{product.name}</p>
-              <p className="font-mono text-accent text-sm mb-4">{formatPrice(product.variants[0]?.price || 0)}</p>
-              <div className="mt-auto space-y-2">
-                <button onClick={() => handleAddToCart({product})} className="btn-primary w-full justify-center h-10 text-xs">MOVE TO CART</button>
-                <button onClick={() => handleRemove(product.id)} className="btn-outline w-full justify-center h-10 text-xs">REMOVE</button>
-              </div>
-            </div>
-          </div>
-        ))}
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
+      <div>
+        <h1 className="font-display text-4xl text-on-background mb-2 tracking-wide uppercase">Wishlist</h1>
+        <p className="text-on-surface-variant font-body-md text-sm">Products you've saved for later.</p>
       </div>
+
+      {loading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-6">
+          {[...Array(3)].map((_, i) => <div key={i} className="aspect-[3/4] bg-surface border border-on-background/5 rounded-xl skeleton" />)}
+        </div>
+      ) : products.length > 0 ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-6">
+          {products.map(p => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      ) : (
+        <div className="bg-surface border border-on-background/5 rounded-xl p-12 text-center flex flex-col items-center justify-center space-y-4">
+          <div className="w-16 h-16 rounded-full bg-background flex items-center justify-center mb-2">
+            <Heart size={24} className="text-on-surface-variant" />
+          </div>
+          <h2 className="font-headline-lg text-xl text-on-background uppercase tracking-wider">Your Wishlist is Empty</h2>
+          <p className="text-on-surface-variant text-sm font-body-md max-w-sm">
+            You haven't saved any items yet. Start exploring our latest drops and find your next favorite fit.
+          </p>
+          <Link href="/shop" className="bg-primary-fixed text-on-primary mt-4 inline-flex px-8 py-3 rounded-xl text-sm font-label-sm tracking-widest uppercase hover:opacity-80 transition-opacity">
+            Browse Shop
+          </Link>
+        </div>
+      )}
     </div>
   )
 }

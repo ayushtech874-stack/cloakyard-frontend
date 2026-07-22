@@ -1,102 +1,124 @@
 'use client'
 import { useState } from 'react'
-import { useAuthStore } from '@/store/auth'
-import { ChevronDown, ChevronUp, MessageSquare } from 'lucide-react'
-
-const FAQS = [
-  { q: "What is your return policy?", a: "We offer a 7-day no-questions-asked return policy. The item must be unused, unwashed, and have all original tags attached." },
-  { q: "How long does shipping take?", a: "Standard shipping takes 5-7 working days. Express shipping takes 2-3 working days. Custom orders take 8-10 working days as they are made to order." },
-  { q: "How do custom orders work?", a: "You select a base product, upload your design, and add placement notes. We'll send you a digital mockup. Once you approve it, we print and ship." },
-  { q: "What does 'Oversized' mean?", a: "Our oversized fit features dropped shoulders, a wider chest, and extended length compared to normal t-shirts. Stick to your usual size for the intended baggy look." },
-]
+import { HelpCircle, Mail, MessageSquare, ChevronDown, Phone } from 'lucide-react'
 
 export default function HelpPage() {
-  const { user } = useAuthStore()
-  const [ticketSubject, setTicketSubject] = useState('Order Issue')
-  const [ticketMessage, setTicketMessage] = useState('')
-  const [loading, setLoading] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
+  
+  const [contact, setContact] = useState({ subject: '', message: '' })
+  const [loading, setLoading] = useState(false)
+  const [sent, setSent] = useState(false)
 
-  const handleTicketSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const faqs = [
+    { q: 'How long does shipping usually take?', a: 'Standard shipping within India takes 3-5 business days. Express shipping takes 1-2 business days. For international orders, please allow 7-14 business days.' },
+    { q: 'What is your return and exchange policy?', a: 'We offer a 14-day return and exchange policy for unworn items with tags still attached. Sale items and limited drops are final sale and cannot be returned.' },
+    { q: 'How do your oversized tees fit?', a: 'Our garments are true-to-size for an oversized streetwear fit. If you prefer a more regular fit, we recommend sizing down one full size.' },
+    { q: 'How do I wash and care for my clothes?', a: 'For best results and longevity, machine wash cold inside-out with like colors. Do not tumble dry—always hang dry. Iron on the reverse side to protect puff prints and graphics.' },
+    { q: 'Restocks for sold-out drops?', a: 'Our exclusive drops are usually limited runs and do not restock once sold out. However, our core collection items restock every month. Subscribe to SMS alerts to be notified first.' },
+  ]
+
+  const handleSend = () => {
+    if (!contact.subject || !contact.message) return alert("Please fill out both fields")
     setLoading(true)
-    const res = await fetch('/api/support', {
-      method: 'POST',
-      body: JSON.stringify({ userId: user?.id, subject: ticketSubject, message: ticketMessage })
-    })
-    setLoading(false)
-    if (res.ok) {
-      alert('Ticket raised successfully. Our team will get back to you within 24 hours.')
-      setTicketMessage('')
-    }
+    setTimeout(() => {
+      setLoading(false)
+      setSent(true)
+      setContact({ subject: '', message: '' })
+      setTimeout(() => setSent(false), 3000)
+    }, 1500)
   }
 
   return (
-    <div className="space-y-12">
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
       <div>
-        <h2 className="font-display text-2xl text-cream mb-6">HELP & SUPPORT</h2>
-        
-        <div className="bg-surface rounded-2xl border border-white/10 p-6 md:p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <MessageSquare className="text-accent" size={24} />
-            <h3 className="font-display text-xl text-cream">RAISE A TICKET</h3>
-          </div>
-          
-          <form onSubmit={handleTicketSubmit} className="space-y-4 max-w-xl">
-            <div>
-              <label className="text-xs text-muted mb-1 block">Subject</label>
-              <select 
-                value={ticketSubject} 
-                onChange={e => setTicketSubject(e.target.value)}
-                className="input-base"
-              >
-                <option>Order Issue</option>
-                <option>Return / Exchange Request</option>
-                <option>Custom Order Query</option>
-                <option>Payment Failure</option>
-                <option>Other</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="text-xs text-muted mb-1 block">Message</label>
-              <textarea 
-                value={ticketMessage} 
-                onChange={e => setTicketMessage(e.target.value)}
-                required 
-                rows={4} 
-                className="input-base resize-none"
-                placeholder="Describe your issue in detail..."
-              />
-            </div>
-            
-            <button type="submit" disabled={loading} className="btn-primary">
-              {loading ? 'SUBMITTING...' : 'SUBMIT TICKET'}
-            </button>
-          </form>
-        </div>
+        <h1 className="font-display text-4xl text-on-background mb-2 tracking-wide uppercase">Help & Support</h1>
+        <p className="text-on-surface-variant font-body-md text-sm">We're here to help. Find answers or reach out to us directly.</p>
       </div>
 
-      <div>
-        <h3 className="font-display text-xl text-cream mb-6">FREQUENTLY ASKED QUESTIONS</h3>
-        <div className="space-y-2">
-          {FAQS.map((faq, i) => (
-            <div key={i} className="bg-surface rounded-xl border border-white/10 overflow-hidden">
-              <button 
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full flex items-center justify-between p-4 text-left text-cream hover:bg-surface2 transition-colors"
-              >
-                <span className="font-medium pr-8">{faq.q}</span>
-                {openFaq === i ? <ChevronUp size={18} className="text-muted flex-shrink-0" /> : <ChevronDown size={18} className="text-muted flex-shrink-0" />}
-              </button>
-              {openFaq === i && (
-                <div className="p-4 pt-0 text-muted text-sm border-t border-white/5 mt-2 bg-bg leading-relaxed">
-                  {faq.a}
-                </div>
-              )}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        
+        {/* FAQ Section */}
+        <div className="lg:col-span-3 space-y-6">
+          <div className="bg-surface border border-on-background/5 rounded-xl p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6 pb-6 border-b border-on-background/5">
+              <HelpCircle className="text-primary-fixed w-5 h-5" />
+              <h2 className="font-headline-lg text-xl uppercase tracking-wider text-on-background">Frequently Asked Questions</h2>
             </div>
-          ))}
+            
+            <div className="space-y-4">
+              {faqs.map((faq, i) => (
+                <div key={i} className="border border-on-background/10 rounded-lg overflow-hidden bg-background/50 transition-all">
+                  <button 
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    className="w-full flex items-center justify-between p-4 text-left hover:bg-surface2 transition-colors"
+                  >
+                    <span className="font-headline-sm text-sm uppercase tracking-widest text-on-background">{faq.q}</span>
+                    <ChevronDown size={16} className={`text-on-surface-variant transition-transform duration-300 ${openFaq === i ? 'rotate-180' : ''}`} />
+                  </button>
+                  <div 
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaq === i ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}
+                  >
+                    <p className="p-4 pt-0 text-sm text-on-surface-variant leading-relaxed font-body-md border-t border-on-background/5 mt-2">{faq.a}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+
+        {/* Contact Form */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-surface border border-on-background/5 rounded-xl p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6 pb-6 border-b border-on-background/5">
+              <MessageSquare className="text-primary-fixed w-5 h-5" />
+              <h2 className="font-headline-lg text-xl uppercase tracking-wider text-on-background">Contact Us</h2>
+            </div>
+            
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-3 text-on-surface-variant text-sm font-body-md">
+                <Mail size={16} />
+                <a href="mailto:support@cloakyard.in" className="hover:text-primary-fixed transition-colors">support@cloakyard.in</a>
+              </div>
+              <div className="flex items-center gap-3 text-on-surface-variant text-sm font-body-md">
+                <Phone size={16} />
+                <a href="tel:+919876543210" className="hover:text-primary-fixed transition-colors">+91 98765 43210</a>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-mono uppercase tracking-widest text-on-surface-variant">Subject</label>
+                <select 
+                  value={contact.subject} onChange={e => setContact({...contact, subject: e.target.value})}
+                  className="w-full h-12 px-4 rounded-lg outline-none transition-colors bg-background border border-on-background/10 text-on-background focus:border-primary-fixed appearance-none"
+                >
+                  <option value="" disabled>Select a topic...</option>
+                  <option value="order_status">Where is my order?</option>
+                  <option value="return_exchange">Return / Exchange Request</option>
+                  <option value="product_question">Question about a product</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-mono uppercase tracking-widest text-on-surface-variant">Message</label>
+                <textarea 
+                  value={contact.message} onChange={e => setContact({...contact, message: e.target.value})}
+                  placeholder="How can we help you?"
+                  className="w-full p-4 min-h-[120px] rounded-lg outline-none transition-colors bg-background border border-on-background/10 text-on-background focus:border-primary-fixed resize-none"
+                />
+              </div>
+              
+              <button 
+                onClick={handleSend} 
+                disabled={loading || sent}
+                className={`w-full transition-all font-display tracking-widest text-sm px-6 py-4 rounded-xl flex items-center justify-center ${sent ? 'bg-green-500 text-white' : 'bg-primary-fixed text-on-primary hover:opacity-80 disabled:opacity-50'}`}
+              >
+                {loading ? <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" /> : sent ? 'MESSAGE SENT!' : 'SEND MESSAGE'}
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   )

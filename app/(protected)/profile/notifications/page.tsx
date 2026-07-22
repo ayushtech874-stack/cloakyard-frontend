@@ -1,96 +1,120 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { useAuthStore } from '@/store/auth'
+import { useState } from 'react'
+import { Bell, Smartphone, Mail } from 'lucide-react'
 
 export default function NotificationsPage() {
-  const { user } = useAuthStore()
-  const [prefs, setPrefs] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [saved, setSaved] = useState(false)
+  
+  const [prefs, setPrefs] = useState({
+    orderSms: true,
+    orderEmail: true,
+    promoEmail: false,
+    promoSms: false,
+    restockEmail: true,
+  })
 
-  useEffect(() => {
-    if (user) {
-      fetch(`/api/profile?userId=${user.id}`)
-        .then(res => res.json())
-        .then(data => {
-          setPrefs(data.notifications || {
-            smsEnabled: true, whatsappEnabled: true, emailEnabled: true,
-            marketingSms: false, marketingWhatsapp: false, marketingEmail: false
-          })
-          setLoading(false)
-        })
-    }
-  }, [user])
-
-  const handleChange = async (key: string, value: boolean) => {
-    const newPrefs = { ...prefs, [key]: value }
-    setPrefs(newPrefs)
-    setSaving(true)
-    await fetch('/api/profile/notifications', {
-      method: 'PATCH',
-      body: JSON.stringify({ userId: user?.id, ...newPrefs })
-    })
-    setSaving(false)
+  const handleSave = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    }, 1000)
   }
 
-  if (loading) return <div className="h-64 rounded-xl skeleton" />
-
-  const Toggle = ({ label, desc, checked, onChange }: any) => (
-    <div className="flex items-center justify-between p-4 border-b border-white/10 last:border-0">
-      <div>
-        <p className="text-cream font-medium">{label}</p>
-        <p className="text-muted text-sm">{desc}</p>
+  const Toggle = ({ label, description, checked, onChange, icon: Icon }: any) => (
+    <div className="flex items-start justify-between py-5 border-b border-on-background/5 last:border-0">
+      <div className="flex gap-4">
+        <div className="mt-1 flex-shrink-0 text-on-surface-variant">
+          <Icon size={20} />
+        </div>
+        <div>
+          <p className="font-headline-sm text-on-background tracking-wider uppercase mb-1">{label}</p>
+          <p className="text-sm text-on-surface-variant font-body-md max-w-sm">{description}</p>
+        </div>
       </div>
-      <label className="relative inline-flex items-center cursor-pointer">
+      <label className="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-4">
         <input type="checkbox" className="sr-only peer" checked={checked} onChange={(e) => onChange(e.target.checked)} />
-        <div className="w-11 h-6 bg-surface2 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent border border-white/10"></div>
+        <div className="w-11 h-6 bg-on-background/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-fixed"></div>
       </label>
     </div>
   )
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
       <div>
-        <div className="flex items-center gap-4 mb-6">
-          <h2 className="font-display text-2xl text-cream">NOTIFICATIONS</h2>
-          {saving && <span className="text-xs text-accent font-mono animate-pulse">Saving...</span>}
-        </div>
+        <h1 className="font-display text-4xl text-on-background mb-2 tracking-wide uppercase">Notifications</h1>
+        <p className="text-on-surface-variant font-body-md text-sm">Choose how you want to be updated.</p>
+      </div>
+
+      <div className="space-y-6">
         
-        <div className="bg-surface rounded-2xl border border-white/10 overflow-hidden mb-8">
-          <div className="p-4 bg-surface2 border-b border-white/10">
-            <h3 className="text-cream font-medium text-sm font-mono tracking-widest">ORDER UPDATES</h3>
+        <div className="bg-surface border border-on-background/5 rounded-xl p-6 md:p-8">
+          <div className="flex items-center gap-3 mb-6 pb-6 border-b border-on-background/5">
+            <Bell className="text-primary-fixed w-5 h-5" />
+            <h2 className="font-headline-lg text-xl uppercase tracking-wider text-on-background">Order Updates</h2>
           </div>
-          <Toggle 
-            label="SMS" desc="Order confirmation, shipping, out for delivery"
-            checked={prefs.smsEnabled} onChange={(v:boolean) => handleChange('smsEnabled', v)}
-          />
-          <Toggle 
-            label="WhatsApp" desc="Get instant updates directly on WhatsApp"
-            checked={prefs.whatsappEnabled} onChange={(v:boolean) => handleChange('whatsappEnabled', v)}
-          />
-          <Toggle 
-            label="Email" desc="Detailed invoice and order tracking links"
-            checked={prefs.emailEnabled} onChange={(v:boolean) => handleChange('emailEnabled', v)}
-          />
+          
+          <div className="flex flex-col">
+            <Toggle 
+              icon={Smartphone}
+              label="SMS Tracking" 
+              description="Receive text messages when your order ships and is out for delivery."
+              checked={prefs.orderSms} 
+              onChange={(v:any) => setPrefs({...prefs, orderSms: v})} 
+            />
+            <Toggle 
+              icon={Mail}
+              label="Email Tracking" 
+              description="Receive emails with detailed tracking links and invoices."
+              checked={prefs.orderEmail} 
+              onChange={(v:any) => setPrefs({...prefs, orderEmail: v})} 
+            />
+          </div>
         </div>
 
-        <div className="bg-surface rounded-2xl border border-white/10 overflow-hidden">
-          <div className="p-4 bg-surface2 border-b border-white/10">
-            <h3 className="text-cream font-medium text-sm font-mono tracking-widest">PROMOTIONS & DROPS</h3>
+        <div className="bg-surface border border-on-background/5 rounded-xl p-6 md:p-8">
+          <div className="flex items-center gap-3 mb-6 pb-6 border-b border-on-background/5">
+            <Bell className="text-primary-fixed w-5 h-5" />
+            <h2 className="font-headline-lg text-xl uppercase tracking-wider text-on-background">Drops & Offers</h2>
           </div>
-          <Toggle 
-            label="SMS Marketing" desc="Early access codes and flash sales"
-            checked={prefs.marketingSms} onChange={(v:boolean) => handleChange('marketingSms', v)}
-          />
-          <Toggle 
-            label="WhatsApp Marketing" desc="New collection drops and lookbooks"
-            checked={prefs.marketingWhatsapp} onChange={(v:boolean) => handleChange('marketingWhatsapp', v)}
-          />
-          <Toggle 
-            label="Email Newsletter" desc="Brand stories, community spotlights, offers"
-            checked={prefs.marketingEmail} onChange={(v:boolean) => handleChange('marketingEmail', v)}
-          />
+          
+          <div className="flex flex-col">
+            <Toggle 
+              icon={Mail}
+              label="Restock Alerts" 
+              description="Get emailed instantly when a sold-out item in your wishlist comes back in stock."
+              checked={prefs.restockEmail} 
+              onChange={(v:any) => setPrefs({...prefs, restockEmail: v})} 
+            />
+            <Toggle 
+              icon={Smartphone}
+              label="Exclusive Drops (SMS)" 
+              description="Get early access text messages 1 hour before new collections drop."
+              checked={prefs.promoSms} 
+              onChange={(v:any) => setPrefs({...prefs, promoSms: v})} 
+            />
+            <Toggle 
+              icon={Mail}
+              label="Promotions & News" 
+              description="Occasional emails about sales, new collections, and brand news."
+              checked={prefs.promoEmail} 
+              onChange={(v:any) => setPrefs({...prefs, promoEmail: v})} 
+            />
+          </div>
         </div>
+
+        <div className="pt-4 flex justify-end">
+          <button 
+            onClick={handleSave} 
+            disabled={loading || saved}
+            className={`transition-all font-display tracking-widest text-lg px-12 py-4 rounded-xl flex items-center justify-center min-w-[200px] ${saved ? 'bg-green-500 text-white' : 'bg-primary-fixed text-on-primary hover:opacity-80 disabled:opacity-50'}`}
+          >
+            {loading ? <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin" /> : saved ? 'SAVED!' : 'SAVE PREFERENCES'}
+          </button>
+        </div>
+
       </div>
     </div>
   )

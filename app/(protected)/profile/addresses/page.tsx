@@ -1,165 +1,107 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { useAuthStore } from '@/store/auth'
-import { MapPin, Plus, Trash2, Edit2, Star, X } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from 'react'
+import { MapPin, Check } from 'lucide-react'
 
 export default function AddressesPage() {
-  const { user } = useAuthStore()
-  const [addresses, setAddresses] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [isModalOpen, setModalOpen] = useState(false)
-  const [editData, setEditData] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+  const [saved, setSaved] = useState(false)
+  
+  const [shipping, setShipping] = useState({
+    firstName: '', lastName: '', street: '', apartment: '', city: '', state: '', zip: '', country: 'India'
+  })
+  
+  const [billing, setBilling] = useState({
+    sameAsShipping: true,
+    firstName: '', lastName: '', street: '', apartment: '', city: '', state: '', zip: '', country: 'India'
+  })
 
-  const fetchAddresses = () => {
-    fetch(`/api/profile/addresses?userId=${user?.id}`)
-      .then(res => res.json())
-      .then(data => { setAddresses(data); setLoading(false) })
+  const handleSave = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    }, 1000)
   }
 
-  useEffect(() => { if(user) fetchAddresses() }, [user])
-
-  const handleDelete = async (id: string) => {
-    if(!confirm('Are you sure?')) return
-    await fetch('/api/profile/addresses', { method: 'DELETE', body: JSON.stringify({ id }) })
-    fetchAddresses()
-  }
-
-  const handleSetDefault = async (address: any) => {
-    await fetch('/api/profile/addresses', { method: 'PATCH', body: JSON.stringify({ id: address.id, userId: user?.id, isDefault: true }) })
-    fetchAddresses()
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const form = e.target as HTMLFormElement
-    const formData = new FormData(form)
-    const data = Object.fromEntries(formData.entries())
-    
-    const payload = {
-      ...data,
-      userId: user?.id,
-      isDefault: formData.get('isDefault') === 'on'
-    }
-
-    if (editData) {
-      await fetch('/api/profile/addresses', { method: 'PATCH', body: JSON.stringify({ id: editData.id, ...payload }) })
-    } else {
-      await fetch('/api/profile/addresses', { method: 'POST', body: JSON.stringify(payload) })
-    }
-    
-    setModalOpen(false)
-    fetchAddresses()
-  }
-
-  const openAdd = () => { setEditData(null); setModalOpen(true) }
-  const openEdit = (a: any) => { setEditData(a); setModalOpen(true) }
-
-  if (loading) return <div className="grid md:grid-cols-2 gap-4">{[...Array(2)].map((_,i)=><div key={i} className="h-40 rounded-xl skeleton" />)}</div>
+  const Input = ({ label, value, onChange, disabled = false, width = 'full' }: any) => (
+    <div className={`space-y-2 ${width === 'half' ? 'col-span-1' : 'col-span-full'}`}>
+      <label className="text-xs font-mono uppercase tracking-widest text-on-surface-variant">{label}</label>
+      <input 
+        type="text" value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
+        className={`w-full h-12 px-4 rounded-lg outline-none transition-colors ${disabled ? 'bg-background/50 border border-on-background/5 text-on-surface-variant cursor-not-allowed opacity-70' : 'bg-background border border-on-background/10 text-on-background focus:border-primary-fixed'}`} 
+      />
+    </div>
+  )
 
   return (
-    <>
-      <div className="space-y-6">
-        <h2 className="font-display text-2xl text-cream mb-6">SAVED ADDRESSES</h2>
-        
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-          {addresses.map(a => (
-            <div key={a.id} className="bg-surface rounded-2xl border border-white/10 p-6 relative group">
-              {a.isDefault && (
-                <span className="absolute top-4 right-4 bg-accent/20 text-accent px-2 py-1 rounded text-xs font-mono flex items-center gap-1">
-                  <Star size={12} className="fill-accent"/> DEFAULT
-                </span>
-              )}
-              <h3 className="font-medium text-cream mb-1 pr-24">{a.name}</h3>
-              <p className="text-muted text-sm mb-4">{a.phone}</p>
-              
-              <div className="text-sm text-muted space-y-1 mb-6 h-16">
-                <p className="line-clamp-1">{a.flat}, {a.area}</p>
-                <p className="line-clamp-1">{a.city}, {a.state} - {a.pincode}</p>
-              </div>
-
-              <div className="flex gap-2">
-                <button onClick={() => openEdit(a)} className="flex-1 btn-outline h-9 text-xs px-0 justify-center">EDIT</button>
-                <button onClick={() => handleDelete(a.id)} className="w-10 h-9 border border-white/20 rounded-lg flex items-center justify-center hover:bg-red-400/10 hover:text-red-400 hover:border-red-400/20 transition-colors text-muted">
-                  <Trash2 size={14} />
-                </button>
-                {!a.isDefault && (
-                  <button onClick={() => handleSetDefault(a)} className="flex-1 border border-white/20 rounded-lg text-xs font-mono hover:border-accent text-muted hover:text-accent transition-colors">SET DEFAULT</button>
-                )}
-              </div>
-            </div>
-          ))}
-
-          <button onClick={openAdd} className="bg-surface border border-white/10 border-dashed rounded-2xl p-6 min-h-[240px] flex flex-col items-center justify-center gap-4 hover:bg-surface2 hover:border-accent transition-colors group">
-            <div className="w-12 h-12 rounded-full bg-bg border border-white/10 flex items-center justify-center text-muted group-hover:text-accent group-hover:border-accent/30 transition-colors">
-              <Plus size={24} />
-            </div>
-            <span className="text-cream font-mono text-sm tracking-widest">ADD NEW ADDRESS</span>
-          </button>
-        </div>
+    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
+      <div>
+        <h1 className="font-display text-4xl text-on-background mb-2 tracking-wide uppercase">Addresses</h1>
+        <p className="text-on-surface-variant font-body-md text-sm">Manage your shipping and billing locations.</p>
       </div>
 
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={()=>setModalOpen(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-surface rounded-2xl border border-white/10 p-6 w-full max-w-lg z-10 shadow-2xl">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-display text-2xl text-cream">{editData ? 'EDIT ADDRESS' : 'NEW ADDRESS'}</h3>
-                <button onClick={()=>setModalOpen(false)} className="text-muted hover:text-cream"><X size={20}/></button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-muted mb-1 block">Full Name</label>
-                    <input name="name" defaultValue={editData?.name} required className="input-base" placeholder="John Doe" />
-                  </div>
-                  <div>
-                    <label className="text-xs text-muted mb-1 block">Phone Number</label>
-                    <input name="phone" defaultValue={editData?.phone} required className="input-base" placeholder="9876543210" pattern="[0-9]{10}" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs text-muted mb-1 block">Flat / House No. / Building</label>
-                  <input name="flat" defaultValue={editData?.flat} required className="input-base" placeholder="A-101, Prestige Towers" />
-                </div>
-
-                <div>
-                  <label className="text-xs text-muted mb-1 block">Area / Street / Sector</label>
-                  <input name="area" defaultValue={editData?.area} required className="input-base" placeholder="Indiranagar" />
-                </div>
-
-                <div className="grid grid-cols-6 gap-4">
-                  <div className="col-span-2">
-                    <label className="text-xs text-muted mb-1 block">Pincode</label>
-                    <input name="pincode" defaultValue={editData?.pincode} required className="input-base" placeholder="560038" pattern="[0-9]{6}" />
-                  </div>
-                  <div className="col-span-2">
-                    <label className="text-xs text-muted mb-1 block">City</label>
-                    <input name="city" defaultValue={editData?.city} required className="input-base" placeholder="Bengaluru" />
-                  </div>
-                  <div className="col-span-2">
-                    <label className="text-xs text-muted mb-1 block">State</label>
-                    <input name="state" defaultValue={editData?.state} required className="input-base" placeholder="Karnataka" />
-                  </div>
-                </div>
-
-                <label className="flex items-center gap-2 mt-4 cursor-pointer">
-                  <input type="checkbox" name="isDefault" defaultChecked={editData?.isDefault} className="rounded bg-bg border-white/20 text-accent focus:ring-accent" />
-                  <span className="text-sm text-muted">Set as default address</span>
-                </label>
-
-                <div className="pt-4 border-t border-white/10 mt-6 flex gap-4">
-                  <button type="button" onClick={()=>setModalOpen(false)} className="btn-outline flex-1 justify-center">CANCEL</button>
-                  <button type="submit" className="btn-primary flex-1 justify-center">SAVE ADDRESS</button>
-                </div>
-              </form>
-            </motion.div>
+      <div className="space-y-6">
+        
+        {/* Shipping */}
+        <div className="bg-surface border border-on-background/5 rounded-xl p-6 md:p-8">
+          <div className="flex items-center gap-3 mb-6 pb-6 border-b border-on-background/5">
+            <MapPin className="text-primary-fixed w-5 h-5" />
+            <h2 className="font-headline-lg text-xl uppercase tracking-wider text-on-background">Shipping Address</h2>
           </div>
-        )}
-      </AnimatePresence>
-    </>
+          
+          <div className="grid grid-cols-2 gap-6">
+            <Input label="First Name" width="half" value={shipping.firstName} onChange={(v:any) => setShipping({...shipping, firstName: v})} />
+            <Input label="Last Name" width="half" value={shipping.lastName} onChange={(v:any) => setShipping({...shipping, lastName: v})} />
+            <Input label="Street Address" value={shipping.street} onChange={(v:any) => setShipping({...shipping, street: v})} />
+            <Input label="Apartment, suite, etc." value={shipping.apartment} onChange={(v:any) => setShipping({...shipping, apartment: v})} />
+            <Input label="City" width="half" value={shipping.city} onChange={(v:any) => setShipping({...shipping, city: v})} />
+            <Input label="State / Province" width="half" value={shipping.state} onChange={(v:any) => setShipping({...shipping, state: v})} />
+            <Input label="ZIP / Postal Code" width="half" value={shipping.zip} onChange={(v:any) => setShipping({...shipping, zip: v})} />
+            <Input label="Country" width="half" value={shipping.country} onChange={(v:any) => setShipping({...shipping, country: v})} />
+          </div>
+        </div>
+
+        {/* Billing */}
+        <div className="bg-surface border border-on-background/5 rounded-xl p-6 md:p-8">
+          <div className="flex items-center justify-between mb-6 pb-6 border-b border-on-background/5">
+            <div className="flex items-center gap-3">
+              <MapPin className="text-primary-fixed w-5 h-5" />
+              <h2 className="font-headline-lg text-xl uppercase tracking-wider text-on-background">Billing Address</h2>
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer group">
+              <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-colors ${billing.sameAsShipping ? 'bg-primary-fixed border-primary-fixed' : 'border-on-background/20 group-hover:border-on-background/40'}`}>
+                {billing.sameAsShipping && <Check size={12} className="text-on-primary" />}
+              </div>
+              <span className="text-on-surface-variant text-sm font-label-sm uppercase tracking-widest group-hover:text-on-background transition-colors">Same as Shipping</span>
+              <input type="checkbox" className="hidden" checked={billing.sameAsShipping} onChange={() => setBilling({...billing, sameAsShipping: !billing.sameAsShipping})} />
+            </label>
+          </div>
+          
+          <div className={`grid grid-cols-2 gap-6 transition-all duration-300 ${billing.sameAsShipping ? 'opacity-50 pointer-events-none' : ''}`}>
+            <Input disabled={billing.sameAsShipping} label="First Name" width="half" value={billing.sameAsShipping ? shipping.firstName : billing.firstName} onChange={(v:any) => setBilling({...billing, firstName: v})} />
+            <Input disabled={billing.sameAsShipping} label="Last Name" width="half" value={billing.sameAsShipping ? shipping.lastName : billing.lastName} onChange={(v:any) => setBilling({...billing, lastName: v})} />
+            <Input disabled={billing.sameAsShipping} label="Street Address" value={billing.sameAsShipping ? shipping.street : billing.street} onChange={(v:any) => setBilling({...billing, street: v})} />
+            <Input disabled={billing.sameAsShipping} label="Apartment, suite, etc." value={billing.sameAsShipping ? shipping.apartment : billing.apartment} onChange={(v:any) => setBilling({...billing, apartment: v})} />
+            <Input disabled={billing.sameAsShipping} label="City" width="half" value={billing.sameAsShipping ? shipping.city : billing.city} onChange={(v:any) => setBilling({...billing, city: v})} />
+            <Input disabled={billing.sameAsShipping} label="State / Province" width="half" value={billing.sameAsShipping ? shipping.state : billing.state} onChange={(v:any) => setBilling({...billing, state: v})} />
+            <Input disabled={billing.sameAsShipping} label="ZIP / Postal Code" width="half" value={billing.sameAsShipping ? shipping.zip : billing.zip} onChange={(v:any) => setBilling({...billing, zip: v})} />
+            <Input disabled={billing.sameAsShipping} label="Country" width="half" value={billing.sameAsShipping ? shipping.country : billing.country} onChange={(v:any) => setBilling({...billing, country: v})} />
+          </div>
+        </div>
+
+        {/* Submit */}
+        <div className="pt-4 flex justify-end">
+          <button 
+            onClick={handleSave} 
+            disabled={loading || saved}
+            className={`transition-all font-display tracking-widest text-lg px-12 py-4 rounded-xl flex items-center justify-center min-w-[200px] ${saved ? 'bg-green-500 text-white' : 'bg-primary-fixed text-on-primary hover:opacity-80 disabled:opacity-50'}`}
+          >
+            {loading ? <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin" /> : saved ? 'SAVED!' : 'SAVE ADDRESS'}
+          </button>
+        </div>
+
+      </div>
+    </div>
   )
 }

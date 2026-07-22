@@ -21,7 +21,7 @@ export async function GET(req: Request) {
         let parsedRegular = parseInt(p.regular_price || '0')
         if (isNaN(parsedRegular) || parsedRegular === 0) {
           if (p.price_html && p.price_html.includes('<del')) {
-            const match = p.price_html.match(/<del[^>]*>.*?([\d,]+(\.\d+)?).*?<\/del>/)
+            const match = p.price_html.match(/<del[^>]*>[\s\S]*?([\d,]+(\.\d+)?)[\s\S]*?<\/del>/)
             if (match && match[1]) {
               parsedRegular = parseInt(match[1].replace(/,/g, ''))
             }
@@ -45,6 +45,7 @@ export async function GET(req: Request) {
           status: 'new',
           isDrop: isDrop,
           sizes: sizes,
+          price_html: p.price_html,
           images: p.images?.length > 0 ? p.images.map((img:any) => ({ url: img.src })) : [{ url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800' }],
           variants: sizes.map((size: string, idx: number) => ({ 
             id: `v${p.id}-${idx}`, price: basePrice, regularPrice: regularPrice, salePrice: salePrice, colour: colour, size: size, stock: stockQty 

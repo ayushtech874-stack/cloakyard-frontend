@@ -75,7 +75,7 @@ export function LoginModal() {
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[rgba(14,14,14,0.97)]" />
           </div>
 
-          <div className="px-8 pb-8 -mt-4 relative z-10">
+          <div className="px-6 pb-6 -mt-4 relative z-10">
             <button onClick={closeLogin} className="absolute top-0 right-6 text-muted hover:text-cream transition-colors">
               <X size={18} />
             </button>
@@ -90,17 +90,17 @@ export function LoginModal() {
                   <h2 className="font-display text-4xl text-cream mb-1">SIGN IN</h2>
                   <p className="text-muted text-sm mb-6">Enter your mobile number to continue</p>
                   <div className="flex items-center gap-0 mb-4" style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10 }}>
-                    <span className="px-3 text-muted font-mono text-sm border-r border-white/10 h-12 flex items-center">+91</span>
+                    <span className="px-3 text-muted font-mono text-sm border-r border-white/10 h-10 flex items-center">+91</span>
                     <input
                       type="tel" maxLength={10} value={phone}
                       onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
                       onKeyDown={e => e.key === 'Enter' && sendOTP()}
                       placeholder="10-digit number"
-                      className="flex-1 bg-transparent px-3 text-cream font-body text-sm outline-none h-12"
+                      className="flex-1 bg-transparent px-3 text-cream font-body text-sm outline-none h-10"
                     />
                   </div>
                   {error && <p className="text-red-400 text-xs mb-3">{error}</p>}
-                  <button onClick={sendOTP} disabled={loading} className="btn-primary w-full justify-center">
+                  <button onClick={sendOTP} disabled={loading} className="btn-primary w-full justify-center h-10">
                     {loading ? 'Sending...' : 'SEND OTP'}
                   </button>
                   <p className="text-muted text-xs text-center mt-3">No password. No hassle.</p>
@@ -109,20 +109,20 @@ export function LoginModal() {
                 <motion.div key="otp" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <h2 className="font-display text-4xl text-cream mb-1">VERIFY</h2>
                   <p className="text-muted text-sm mb-6">Sent to +91 {phone}</p>
-                  <div className="flex gap-2 mb-4">
+                  <div className="flex gap-1.5 mb-4">
                     {otp.map((digit, i) => (
                       <input
                         key={i} id={`otp-${i}`}
                         type="text" maxLength={1} value={digit}
                         onChange={e => handleOTPInput(e.target.value, i)}
                         onKeyDown={e => e.key === 'Backspace' && !digit && i > 0 && document.getElementById(`otp-${i-1}`)?.focus()}
-                        className="flex-1 h-12 text-center font-mono text-lg text-cream rounded-lg outline-none focus:border-accent transition-colors"
+                        className="flex-1 h-10 text-center font-mono text-base text-cream rounded-lg outline-none focus:border-accent transition-colors"
                         style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }}
                       />
                     ))}
                   </div>
                   {error && <p className="text-red-400 text-xs mb-3">{error}</p>}
-                  <button onClick={verifyOTP} disabled={loading} className="btn-primary w-full justify-center">
+                  <button onClick={verifyOTP} disabled={loading} className="btn-primary w-full justify-center h-10">
                     {loading ? 'Verifying...' : 'VERIFY →'}
                   </button>
                   <div className="text-center mt-3">

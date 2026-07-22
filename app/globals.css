@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Light Theme Brutalist / Minimal Monochrome */
+    --bg: #ffffff;
+    --surface: #f5f5f5;
+    --surface2: #e5e5e5;
+    --accent: #000000;
+    --accent-dk: #333333;
+    --muted: #666666;
+    --cream: #1a1a1a;
+
+    --primary-fixed: #000000;
+    --on-primary-container: #ffffff;
+    --on-surface-variant: #666666;
+    --on-primary: #ffffff;
+    --surface-container: #f0f0f0;
+    --background: #ffffff;
+    --on-background: #000000;
+  }
+
+  .dark {
+    /* Dark Theme Brutalist / Minimal Monochrome */
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --accent: #ffffff;
+    --accent-dk: #e5e5e5;
+    --muted: #8a8580;
+    --cream: #f5f0e8;
+
+    --primary-fixed: #ffffff;
+    --on-primary-container: #000000;
+    --on-surface-variant: #a3a3a3;
+    --on-primary: #000000;
+    --surface-container: #171717;
+    --background: #0a0a0a;
+    --on-background: #ffffff;
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grain texture overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.038;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary-fixed); }
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+}
+.dark .glass {
+  background: rgba(10, 10, 10, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Hide scrollbar but keep scroll */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

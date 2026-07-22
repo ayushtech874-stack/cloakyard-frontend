@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { Heart, Star, ChevronRight } from 'lucide-react'
+import { Heart, Star, ChevronRight, ChevronLeft } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { useWishlistStore } from '@/store/wishlist'
 import { useAuthStore } from '@/store/auth'
@@ -100,7 +100,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           {/* Images */}
           <div className="space-y-4">
             <div 
-              className="relative aspect-[4/5] bg-surface2 rounded-xl overflow-hidden border border-white/[0.06] cursor-crosshair"
+              className="relative h-[65vh] md:h-[75vh] w-full bg-surface2 rounded-xl overflow-hidden border border-white/[0.06] cursor-crosshair group"
               onMouseEnter={() => setIsZooming(true)}
               onMouseLeave={() => { setIsZooming(false); setZoomStyle({ transformOrigin: 'center', transform: 'scale(1)' }) }}
               onMouseMove={handleMouseMove}
@@ -113,6 +113,17 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 style={isZooming ? zoomStyle : { transformOrigin: 'center', transform: 'scale(1)' }}
                 priority 
               />
+              
+              {product.images?.length > 1 && (
+                <>
+                  <button onClick={(e) => { e.stopPropagation(); setActiveImage(prev => prev === 0 ? product.images.length - 1 : prev - 1) }} className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-black/70 hover:scale-110 z-10">
+                    <ChevronLeft size={20} />
+                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); setActiveImage(prev => (prev + 1) % product.images.length) }} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-black/70 hover:scale-110 z-10">
+                    <ChevronRight size={20} />
+                  </button>
+                </>
+              )}
             </div>
             <div className="flex gap-4 overflow-x-auto no-scrollbar">
               {product.images.map((img: any, i: number) => (

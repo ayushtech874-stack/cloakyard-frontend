@@ -18,7 +18,15 @@ export async function GET(req: Request) {
         const parsedPrice = parseInt(rawPrice);
         const basePrice = (isNaN(parsedPrice) ? 0 : parsedPrice) * 100;
         
-        const parsedRegular = parseInt(p.regular_price || '0')
+        let parsedRegular = parseInt(p.regular_price || '0')
+        if (isNaN(parsedRegular) || parsedRegular === 0) {
+          if (p.price_html && p.price_html.includes('<del')) {
+            const match = p.price_html.match(/<del[^>]*>.*?([\d,]+(\.\d+)?).*?<\/del>/)
+            if (match && match[1]) {
+              parsedRegular = parseInt(match[1].replace(/,/g, ''))
+            }
+          }
+        }
         const parsedSale = parseInt(p.sale_price || '0')
         const regularPrice = (isNaN(parsedRegular) ? 0 : parsedRegular) * 100
         const salePrice = (isNaN(parsedSale) ? 0 : parsedSale) * 100

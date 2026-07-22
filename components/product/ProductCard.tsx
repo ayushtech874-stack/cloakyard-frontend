@@ -10,7 +10,7 @@ interface ProductCardProps {
   product: {
     id: string; slug: string; name: string; fitType: string; isNew: boolean
     images: { url: string; altText?: string | null }[]
-    variants: { price: number; colour: string; size: string; stock: number }[]
+    variants: { price: number; regularPrice?: number; colour: string; size: string; stock: number }[]
     avgRating?: number; reviewCount?: number
   }
 }
@@ -21,6 +21,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const primaryImage = product.images[0]?.url ?? '/placeholder.jpg'
   const secondaryImage = product.images[1]?.url
   const minPrice = Math.min(...product.variants.map((v) => v.price))
+  const minRegularPrice = Math.min(...product.variants.map((v) => v.regularPrice || v.price))
   const colours = [...new Set(product.variants.map((v) => v.colour))]
   const inWishlist = isInWishlist(product.id)
   const isSoldOut = product.variants.every((v) => v.stock === 0)
@@ -69,7 +70,12 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="p-3 space-y-2">
         <p className="font-body text-sm font-medium text-cream truncate">{product.name}</p>
         <div className="flex items-center justify-between">
-          <p className="font-mono text-accent text-sm font-medium">{formatPrice(minPrice)}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-mono text-accent text-sm font-medium">{formatPrice(minPrice)}</p>
+            {minRegularPrice > minPrice && (
+              <p className="font-mono text-muted text-xs line-through">{formatPrice(minRegularPrice)}</p>
+            )}
+          </div>
           {product.avgRating && product.avgRating > 0 ? (
             <span className="text-xs text-muted flex items-center gap-1">
               <span className="text-accent">★</span> {product.avgRating.toFixed(1)}

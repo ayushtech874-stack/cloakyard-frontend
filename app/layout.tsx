@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import './globals.css'
 import { Navbar } from '@/components/navbar/Navbar'
 import { CartDrawer } from '@/components/cart/CartDrawer'
@@ -30,7 +31,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-white dark:bg-[#0a0a0a] text-black dark:text-white transition-colors duration-300">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Navbar />
+          <Suspense fallback={null}>
+            <Navbar />
+          </Suspense>
           <CartDrawer />
           <LoginModal />
           <main>{children}</main>

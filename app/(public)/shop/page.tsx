@@ -29,6 +29,7 @@ function ShopContent() {
     if (sizes.length) q.set('size', sizes.join(','))
     if (statuses.length) q.set('status', statuses.join(','))
     if (sort) q.set('sort', sort)
+    if (view === 'drops') q.set('view', 'drops')
     
     fetch(`/api/products?${q.toString()}`)
       .then(res => res.json())

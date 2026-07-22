@@ -10,7 +10,7 @@ export function middleware(req: NextRequest) {
     // Check for user in cookie (set after OTP verify)
     const userId = req.cookies.get('cloakyard-user-id')
     if (!userId) {
-      return NextResponse.redirect(new URL(`/login?redirect=${pathname}`, req.url))
+      return NextResponse.redirect(new URL('/', req.url))
     }
   }
   return NextResponse.next()

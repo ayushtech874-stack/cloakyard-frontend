@@ -140,7 +140,7 @@ export function Navbar() {
             <Link href="/shop?view=shop" onClick={() => setMobileMenuOpen(false)} className={pathname === '/shop' && currentView !== 'drops' ? 'text-primary-fixed' : ''}>Shop All</Link>
             <Link href="/shop?view=drops" onClick={() => setMobileMenuOpen(false)} className={pathname === '/shop' && currentView === 'drops' ? 'text-primary-fixed' : ''}>Drops</Link>
             <Link href="/customise" onClick={() => setMobileMenuOpen(false)} className={pathname === '/customise' ? 'text-primary-fixed' : ''}>Customise</Link>
-            <Link href="/profile" onClick={() => { setMobileMenuOpen(false); if(!user) openLogin(); }} className={pathname === '/profile' ? 'text-primary-fixed' : ''}>Profile</Link>
+            <button onClick={() => { setMobileMenuOpen(false); if(!user) { openLogin() } else { window.location.href = '/profile' } }} className={`text-left ${pathname.startsWith('/profile') ? 'text-primary-fixed' : ''}`}>Profile</button>
           </nav>
           {/* Mobile Theme Toggle */}
           {mounted && (

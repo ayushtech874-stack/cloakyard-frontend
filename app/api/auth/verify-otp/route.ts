@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { fetchWooCommerce } from '@/lib/woocommerce'
 
 export async function POST(req: Request) {
@@ -15,8 +16,6 @@ export async function POST(req: Request) {
     }
 
     // 1. Search WooCommerce for a customer with this phone number in billing
-    // WooCommerce REST API allows searching customers by email, but not directly by phone easily.
-    // Instead, we might need to search all or rely on a specific username format (e.g. phone number)
     const username = `user_${phone}`
     const existingCustomers = await fetchWooCommerce(`customers?search=${username}`)
     
@@ -25,7 +24,7 @@ export async function POST(req: Request) {
     if (!customer) {
       // 2. Create the customer in WooCommerce if they don't exist
       const createData = {
-        email: `${phone}@cloakyard.in`, // dummy email required by WC
+        email: `${phone}@cloakyard.in`,
         first_name: '',
         last_name: '',
         username: username,
@@ -60,6 +59,14 @@ export async function POST(req: Request) {
       altPhone: customer.meta_data?.find((m:any) => m.key === 'alt_phone')?.value || null,
       avatar: customer.meta_data?.find((m:any) => m.key === 'avatar_url')?.value || null,
     }
+
+    // Await cookies and set it so Next.js middleware knows the user is logged in!
+    const cookieStore = await cookies()
+    cookieStore.set('cloakyard-user-id', user.id, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      httpOnly: false // false so client can access if needed, though mostly for middleware
+    })
 
     return NextResponse.json({ success: true, user })
   } catch (error) {

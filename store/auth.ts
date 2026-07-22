@@ -28,5 +28,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
   openLogin: (afterLogin) => set({ isLoginOpen: true, pendingAction: afterLogin ?? null }),
   closeLogin: () => set({ isLoginOpen: false, pendingAction: null }),
   setUser: (user) => set({ user, isLoginOpen: false }),
-  logout: () => set({ user: null }),
+  logout: () => {
+    document.cookie = 'cloakyard-user-id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+    set({ user: null })
+  },
 }))

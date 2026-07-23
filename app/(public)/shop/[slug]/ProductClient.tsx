@@ -23,6 +23,7 @@ export default function ProductClient({ slug }: { slug: string }) {
   const { addItem, openCart } = useCartStore()
   const { toggle, isInWishlist } = useWishlistStore()
   const { user, openLogin } = useAuthStore()
+  const { toast } = useToastStore()
   const router = useRouter()
 
   useEffect(() => {
@@ -46,7 +47,6 @@ export default function ProductClient({ slug }: { slug: string }) {
   const selectedVariant = product.variants.find((v: any) => v.colour === selectedColor && v.size === selectedSize) || product.variants.find((v: any) => v.colour === selectedColor)
   
   const inWishlist = isInWishlist(product.id)
-  const { toast } = useToastStore()
   
   const handleAddToCart = () => {
     if (!selectedSize) { toast('Please select a size before adding to cart'); return }

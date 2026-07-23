@@ -132,6 +132,23 @@ export async function GET(req: Request) {
         formatted = formatted.filter((p: any) => p.sizes.some((s: string) => filterSize.includes(s.toLowerCase())))
       }
 
+      // Handle Sorting
+      const sort = searchParams.get('sort')
+      if (sort === 'price-asc') {
+        formatted.sort((a, b) => {
+          const aPrice = Math.min(...a.variants.map((v:any) => v.price))
+          const bPrice = Math.min(...b.variants.map((v:any) => v.price))
+          return aPrice - bPrice
+        })
+      } else if (sort === 'price-desc') {
+        formatted.sort((a, b) => {
+          const aPrice = Math.min(...a.variants.map((v:any) => v.price))
+          const bPrice = Math.min(...b.variants.map((v:any) => v.price))
+          return bPrice - aPrice
+        })
+      }
+      // 'createdAt' is the default sorting from WooCommerce (Date, descending)
+
       return NextResponse.json(formatted)
     }
 

@@ -89,7 +89,7 @@ export function Navbar() {
             <button onClick={() => { if(!user) openLogin(); else window.location.href='/profile/wishlist' }} className="relative group hidden md:block hover:opacity-80 transition-opacity">
               <Heart className="w-5 h-5 text-on-surface-variant group-hover:text-primary-fixed" />
               {mounted && wishlistCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-primary-fixed text-on-primary-fixed text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-2 bg-primary-fixed text-on-primary text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {wishlistCount}
                 </span>
               )}
@@ -108,7 +108,7 @@ export function Navbar() {
             <button onClick={openCart} className="relative group hover:opacity-80 transition-opacity">
               <ShoppingBag className="w-5 h-5 text-on-surface-variant group-hover:text-primary-fixed" />
               {mounted && cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-primary-fixed text-on-primary-fixed text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-2 bg-primary-fixed text-on-primary text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>
               )}

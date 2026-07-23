@@ -36,7 +36,7 @@ export default function NotificationsPage() {
       </div>
       <label className="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-4">
         <input type="checkbox" className="sr-only peer" checked={checked} onChange={(e) => onChange(e.target.checked)} />
-        <div className="w-11 h-6 bg-on-background/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface after:border-on-background/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-fixed peer-checked:after:bg-white"></div>
+        <div className="w-11 h-6 bg-on-background/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface after:border-on-background/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-fixed peer-checked:after:bg-on-primary"></div>
       </label>
     </div>
   )

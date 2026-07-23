@@ -1,9 +1,12 @@
 'use client'
 import { useState } from 'react'
 import { HelpCircle, Mail, MessageSquare, ChevronDown, Phone } from 'lucide-react'
+import { useToastStore } from '@/store/toast'
+
 
 export default function HelpPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const { toast } = useToastStore()
   
   const [contact, setContact] = useState({ subject: '', message: '' })
   const [loading, setLoading] = useState(false)
@@ -18,11 +21,12 @@ export default function HelpPage() {
   ]
 
   const handleSend = () => {
-    if (!contact.subject || !contact.message) return alert("Please fill out both fields")
+    if (!contact.subject || !contact.message) return toast("Please fill out both fields")
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
       setSent(true)
+      toast("Message sent successfully. Our team will contact you shortly.")
       setContact({ subject: '', message: '' })
       setTimeout(() => setSent(false), 3000)
     }, 1500)

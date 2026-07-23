@@ -6,6 +6,7 @@ import { Heart, Star, ChevronRight, ChevronLeft } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { useWishlistStore } from '@/store/wishlist'
 import { useAuthStore } from '@/store/auth'
+import { useToastStore } from '@/store/toast'
 import { formatPrice } from '@/lib/utils'
 import { Footer } from '@/components/layout/Footer'
 import ReviewsSection from '@/components/shop/ReviewsSection'
@@ -47,9 +48,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const selectedVariant = product.variants.find((v: any) => v.colour === selectedColor && v.size === selectedSize) || product.variants.find((v: any) => v.colour === selectedColor)
   
   const inWishlist = isInWishlist(product.id)
+  const { toast } = useToastStore()
   
   const handleAddToCart = () => {
-    if (!selectedSize) { alert('Please select a size'); return }
+    if (!selectedSize) { toast('Please select a size before adding to cart'); return }
     if (!user) { openLogin(() => handleAddToCart()); return }
     addItem({
       variantId: selectedVariant.id,
@@ -60,10 +62,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       colour: selectedColor,
       price: selectedVariant.price
     })
+    toast('Added to cart')
   }
 
   const handleBuyNow = () => {
-    if (!selectedSize) { alert('Please select a size'); return }
+    if (!selectedSize) { toast('Please select a size to buy now'); return }
     if (!user) { openLogin(() => handleBuyNow()); return }
     addItem({
       variantId: selectedVariant.id,

@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import { useCartStore } from '@/store/cart'
+import { useToastStore } from '@/store/toast'
 import { formatPrice } from '@/lib/utils'
 import { MapPin, Truck, CreditCard, CheckCircle2 } from 'lucide-react'
 
 export default function CheckoutPage() {
   const { user } = useAuthStore()
   const { items, total, clearCart } = useCartStore()
+  const { toast } = useToastStore()
   const router = useRouter()
   
   const [step, setStep] = useState(1)
@@ -47,8 +49,8 @@ export default function CheckoutPage() {
   }
 
   const handleNextStep = () => {
-    if (step === 1 && !selectedAddress) return alert('Select an address')
-    if (step === 1 && serviceable === false) return alert('Delivery not available to this pincode')
+    if (step === 1 && !selectedAddress) return toast('Select an address')
+    if (step === 1 && serviceable === false) return toast('Delivery not available to this pincode')
     setStep(s => s + 1)
   }
 
@@ -97,7 +99,7 @@ export default function CheckoutPage() {
           clearCart()
           router.push(`/profile/orders/${data.dbOrderId}?success=true`)
         } else {
-          alert('Payment verification failed')
+          toast('Payment verification failed')
           router.push(`/profile/orders/${data.dbOrderId}`)
         }
       },

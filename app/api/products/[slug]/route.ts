@@ -46,7 +46,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
         id: p.id.toString(),
         slug: p.slug,
         name: p.name,
-        description: p.short_description ? p.short_description.replace(/<[^>]+>/g, '') : p.description.replace(/<[^>]+>/g, ''),
+        description: p.description || p.short_description || '',
         fabric: '100% Premium French Terry Cotton (240 GSM)',
         careInstructions: 'Machine wash cold. Do not tumble dry. Iron on reverse.',
         fitType: p.attributes?.find((a:any) => a.name.toLowerCase() === 'fit')?.options[0]?.toLowerCase() || 'oversize',

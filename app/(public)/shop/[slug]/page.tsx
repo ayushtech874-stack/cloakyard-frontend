@@ -206,7 +206,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             <div className="border-t border-white/[0.06] pt-8 space-y-6">
               <div>
                 <h4 className="font-display text-xl text-cream mb-2">DESCRIPTION</h4>
-                <p className="text-muted text-sm leading-relaxed">{product.description}</p>
+                <div className="text-muted text-sm leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: product.description }} />
               </div>
               <div className="flex gap-12">
                 <div>
